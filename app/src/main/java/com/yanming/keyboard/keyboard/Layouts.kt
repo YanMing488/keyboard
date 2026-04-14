@@ -1,36 +1,33 @@
 package com.yanming.keyboard.keyboard
 
-// ═══════════════════════════════════════════════════════
-// Keyboard layouts — Latin, Hebrew, Korean, Pinyin
-// ═══════════════════════════════════════════════════════
-
 enum class Lang { LATIN, HEBREW, KOREAN, PINYIN }
 enum class KeyType { CHAR, BACKSPACE, ENTER, SPACE, SHIFT, LANG_SWITCH, HEBREW_TOGGLE, SYMBOLS, EMOJI }
 
 data class Key(
     val label: String,
-    val altLabel: String = "",   // long-press or shift
+    val altLabel: String = "",
     val type: KeyType = KeyType.CHAR,
-    val widthRatio: Float = 1f,  // relative to standard key width
-    val code: Int = 0,           // char code (0 = use label)
+    val widthRatio: Float = 1f,
+    val code: Int = 0,
 )
 
-// ── LATIN (EN / ID) ────────────────────────────────────
+// ── LATIN ──────────────────────────────────────────────
 val LATIN_LOWER = listOf(
     listOf("q","w","e","r","t","y","u","i","o","p").map { Key(it, it.uppercase()) },
     listOf("a","s","d","f","g","h","j","k","l").map { Key(it, it.uppercase()) },
     listOf(
         Key("⇧", type = KeyType.SHIFT, widthRatio = 1.5f),
-        *"zxcvbnm".map { Key(it.toString(), it.uppercaseChar().toString()) }.toTypedArray(),
+        Key("z","Z"), Key("x","X"), Key("c","C"), Key("v","V"),
+        Key("b","B"), Key("n","N"), Key("m","M"),
         Key("⌫", type = KeyType.BACKSPACE, widthRatio = 1.5f),
     ),
     listOf(
-        Key("עב", type = KeyType.HEBREW_TOGGLE, widthRatio = 1.2f),
+        Key("עב", type = KeyType.HEBREW_TOGGLE, widthRatio = 1.3f),
         Key("한", type = KeyType.LANG_SWITCH, widthRatio = 1.2f, code = Lang.KOREAN.ordinal),
         Key("拼", type = KeyType.LANG_SWITCH, widthRatio = 1.2f, code = Lang.PINYIN.ordinal),
-        Key("", type = KeyType.SPACE, widthRatio = 3.5f),
-        Key(",", "!"),
-        Key(".", "?"),
+        Key("", type = KeyType.SPACE, widthRatio = 3f),
+        Key(",","!"),
+        Key(".","?"),
         Key("↵", type = KeyType.ENTER, widthRatio = 1.5f),
     )
 )
@@ -48,46 +45,71 @@ val SYMBOLS_ROW2 = listOf("@","#","$","€","¢","£","¥","%","&","*").map { Ke
 val SYMBOLS_ROW3 = listOf("-","+","=","(",")","/","\\","'","\"",":").map { Key(it) }
 val SYMBOLS_ROW4 = listOf(
     Key("ABC", type = KeyType.SYMBOLS, widthRatio = 1.5f),
-    *listOf(";","!","?","_","~","`").map { Key(it) }.toTypedArray(),
+    Key(";"), Key("!"), Key("?"), Key("_"), Key("~"), Key("`"),
     Key("⌫", type = KeyType.BACKSPACE, widthRatio = 1.5f),
 )
 val SYMBOLS_BOTTOM = listOf(
     Key("עב", type = KeyType.HEBREW_TOGGLE, widthRatio = 1.2f),
     Key("", type = KeyType.SPACE, widthRatio = 5f),
-    Key(".", "."),
+    Key("."),
     Key("↵", type = KeyType.ENTER, widthRatio = 1.5f),
 )
 
-// ── HEBREW (overlay on Latin positions) ────────────────
-// Maps Latin key positions to Hebrew characters
-// Same physical layout — just different characters
-val HEBREW_MAP = mapOf(
-    "q" to "/", "w" to "'", "e" to "ק", "r" to "ר", "t" to "א",
-    "y" to "ט", "u" to "ו", "i" to "ן", "o" to "ם", "p" to "פ",
-    "a" to "ש", "s" to "ד", "d" to "ג", "f" to "כ", "g" to "ע",
-    "h" to "י", "j" to "ח", "k" to "ל", "l" to "ך",
-    "z" to "ז", "x" to "ס", "c" to "ב", "v" to "ה", "b" to "נ",
-    "n" to "מ", "m" to "צ",
+// ── HEBREW ─────────────────────────────────────────────
+// Standard Israeli keyboard layout — exactly as on PC
+val HEBREW_LAYOUT = listOf(
+    // Row 1: / ' ק ר א ט ו ן ם פ
+    listOf(
+        Key("/"), Key("'"), Key("ק"), Key("ר"), Key("א"),
+        Key("ט"), Key("ו"), Key("ן"), Key("ם"), Key("פ"),
+    ),
+    // Row 2: ש ד ג כ ע י ח ל ך
+    listOf(
+        Key("ש"), Key("ד"), Key("ג"), Key("כ"), Key("ע"),
+        Key("י"), Key("ח"), Key("ל"), Key("ך"),
+    ),
+    // Row 3: shift + ז ס ב ה נ מ צ + backspace
+    listOf(
+        Key("⇧", type = KeyType.SHIFT, widthRatio = 1.5f),
+        Key("ז"), Key("ס"), Key("ב"), Key("ה"),
+        Key("נ"), Key("מ"), Key("צ"),
+        Key("⌫", type = KeyType.BACKSPACE, widthRatio = 1.5f),
+    ),
+    // Row 4: bottom
+    listOf(
+        Key("EN", type = KeyType.HEBREW_TOGGLE, widthRatio = 1.3f),
+        Key("한", type = KeyType.LANG_SWITCH, widthRatio = 1.2f, code = Lang.KOREAN.ordinal),
+        Key("拼", type = KeyType.LANG_SWITCH, widthRatio = 1.2f, code = Lang.PINYIN.ordinal),
+        Key("", type = KeyType.SPACE, widthRatio = 3f),
+        Key(","), Key("."),
+        Key("↵", type = KeyType.ENTER, widthRatio = 1.5f),
+    ),
 )
 
-fun latinToHebrew(rows: List<List<Key>>): List<List<Key>> {
-    return rows.map { row ->
+// Final sofit forms on shift
+val HEBREW_SHIFT_MAP = mapOf(
+    "כ" to "ך", "מ" to "ם", "נ" to "ן", "פ" to "ף", "צ" to "ץ",
+)
+
+fun getHebrewLayout(shifted: Boolean): List<List<Key>> {
+    if (!shifted) return HEBREW_LAYOUT
+    return HEBREW_LAYOUT.map { row ->
         row.map { k ->
-            val heb = HEBREW_MAP[k.label.lowercase()]
-            if (k.type == KeyType.CHAR && heb != null) k.copy(label = heb, altLabel = k.label)
+            val sofit = HEBREW_SHIFT_MAP[k.label]
+            if (k.type == KeyType.CHAR && sofit != null) k.copy(label = sofit)
             else k
         }
     }
 }
 
-// ── KOREAN (Hangul) ────────────────────────────────────
-// Standard Korean 2-set layout
+// ── KOREAN ─────────────────────────────────────────────
 val KOREAN_LAYOUT = listOf(
     listOf("ㅂ","ㅈ","ㄷ","ㄱ","ㅅ","ㅛ","ㅕ","ㅑ","ㅐ","ㅔ").map { Key(it) },
     listOf("ㅁ","ㄴ","ㅇ","ㄹ","ㅎ","ㅗ","ㅓ","ㅏ","ㅣ").map { Key(it) },
     listOf(
         Key("⇧", type = KeyType.SHIFT, widthRatio = 1.5f),
-        *listOf("ㅋ","ㅌ","ㅊ","ㅍ","ㅠ","ㅜ","ㅡ").map { Key(it) }.toTypedArray(),
+        Key("ㅋ"), Key("ㅌ"), Key("ㅊ"), Key("ㅍ"),
+        Key("ㅠ"), Key("ㅜ"), Key("ㅡ"),
         Key("⌫", type = KeyType.BACKSPACE, widthRatio = 1.5f),
     ),
     listOf(
@@ -103,7 +125,8 @@ val PINYIN_LAYOUT = listOf(
     listOf("a","s","d","f","g","h","j","k","l").map { Key(it) },
     listOf(
         Key("⇧", type = KeyType.SHIFT, widthRatio = 1.5f),
-        *"zxcvbnm".map { Key(it.toString()) }.toTypedArray(),
+        Key("z"), Key("x"), Key("c"), Key("v"),
+        Key("b"), Key("n"), Key("m"),
         Key("⌫", type = KeyType.BACKSPACE, widthRatio = 1.5f),
     ),
     listOf(
@@ -113,8 +136,59 @@ val PINYIN_LAYOUT = listOf(
     )
 )
 
+// ── COMMON PINYIN CANDIDATES ───────────────────────────
+// Basic map of Pinyin → most common characters
+val PINYIN_MAP = mapOf(
+    "ni" to listOf("你","妮","倪","腻"),
+    "hao" to listOf("好","号","毫","豪"),
+    "wo" to listOf("我","握","卧","窝"),
+    "shi" to listOf("是","时","事","十","市","使"),
+    "de" to listOf("的","得","地","德"),
+    "zai" to listOf("在","再","载","栽"),
+    "he" to listOf("和","喝","河","何","核"),
+    "ta" to listOf("他","她","它","塔"),
+    "men" to listOf("们","门","闷"),
+    "you" to listOf("你","有","又","友","右"),
+    "yi" to listOf("一","以","已","意","义","医"),
+    "ge" to listOf("个","各","哥","格","歌"),
+    "lai" to listOf("来","赖","莱"),
+    "qu" to listOf("去","取","趣","区"),
+    "dui" to listOf("对","队","堆"),
+    "bu" to listOf("不","步","部","布"),
+    "ma" to listOf("吗","妈","马","骂"),
+    "le" to listOf("了","乐","勒"),
+    "ren" to listOf("人","任","忍","认"),
+    "da" to listOf("大","打","达","答"),
+    "zhong" to listOf("中","重","种","众"),
+    "guo" to listOf("国","过","果","锅"),
+    "wei" to listOf("为","位","味","未","围"),
+    "wo" to listOf("我","握","卧","蜗"),
+    "xiao" to listOf("小","笑","效","校","消"),
+    "shuo" to listOf("说","朔"),
+    "kan" to listOf("看","坎","砍"),
+    "wen" to listOf("问","文","温","闻"),
+    "zhi" to listOf("知","只","之","志","值","制"),
+    "mei" to listOf("没","每","美","妹","媒"),
+    "jiu" to listOf("就","旧","九","救","酒"),
+    "yao" to listOf("要","药","摇","腰"),
+    "hui" to listOf("会","回","汇","灰"),
+    "hai" to listOf("还","海","害","孩"),
+    "ba" to listOf("把","吧","八","爸","罢"),
+    "na" to listOf("那","拿","哪","纳"),
+    "zen" to listOf("怎"),
+    "zenme" to listOf("怎么"),
+    "xie" to listOf("谢","些","写","鞋"),
+    "ai" to listOf("爱","哎","唉","矮"),
+    "wo" to listOf("我","握"),
+    "ya" to listOf("呀","压","哑","亚"),
+    "jin" to listOf("今","进","金","近","紧"),
+    "tian" to listOf("天","田","甜","填"),
+    "lao" to listOf("老","劳","牢","捞"),
+    "gao" to listOf("高","告","搞","稿"),
+    "ming" to listOf("明","名","命","鸣"),
+)
+
 // ── HANGUL COMPOSER ────────────────────────────────────
-// Combines Jamo into syllable blocks
 object HangulComposer {
     private val CHO  = listOf("ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ")
     private val JUNG = listOf("ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ")

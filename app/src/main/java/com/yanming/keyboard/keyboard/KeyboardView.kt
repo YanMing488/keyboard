@@ -40,7 +40,7 @@ class KeyboardView(context: Context) : View(context) {
 
     var lang: Lang = Lang.LATIN
     var shifted = false
-    var hebrewMode = false
+    var hebrewMode -> getHebrewLayout(shifted) = false
     var symbolMode = false
 
     var onKey: ((Key) -> Unit)? = null
@@ -133,7 +133,7 @@ class KeyboardView(context: Context) : View(context) {
             symbolMode -> listOf(SYMBOLS_ROW1, SYMBOLS_ROW2, SYMBOLS_ROW3, SYMBOLS_ROW4, SYMBOLS_BOTTOM)
             lang == Lang.KOREAN -> KOREAN_LAYOUT
             lang == Lang.PINYIN -> PINYIN_LAYOUT
-            hebrewMode -> latinToHebrew(if (shifted) LATIN_UPPER else LATIN_LOWER)
+            hebrewMode -> getHebrewLayout(shifted)
             shifted    -> LATIN_UPPER
             else       -> LATIN_LOWER
         }

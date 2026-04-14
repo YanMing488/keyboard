@@ -40,7 +40,7 @@ class KeyboardView(context: Context) : View(context) {
 
     var lang: Lang = Lang.LATIN
     var shifted = false
-    var hebrewMode -> getHebrewLayout(shifted) = false
+var hebrewMode = false
     var symbolMode = false
 
     var onKey: ((Key) -> Unit)? = null

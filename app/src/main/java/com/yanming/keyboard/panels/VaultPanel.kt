@@ -1,20 +1,21 @@
-private lateinit var timerTxt: TextView
+package com.yanming.keyboard.panels
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import com.yanming.keyboard.ServerClient
 import com.yanming.keyboard.VaultItem
-
-// ═══════════════════════════════════════════════════════
-// Vault Panel — passwords from server, nothing stored locally
-// Auto-closes after 30 seconds of inactivity
-// ═══════════════════════════════════════════════════════
 
 class VaultPanel(context: Context) : LinearLayout(context) {
 
     var onPaste: ((String) -> Unit)? = null
+    var onAutoClose: (() -> Unit)? = null
 
     private val BG    = Color.parseColor("#0c0805")
     private val SURF  = Color.parseColor("#1a1410")
@@ -24,9 +25,9 @@ class VaultPanel(context: Context) : LinearLayout(context) {
     private val RED   = Color.parseColor("#9a4a4a")
 
     private val list: LinearLayout
-    private val timerTxt: TextView
+    private lateinit var timerTxt: TextView
     private var secondsLeft = 30
-    private val timerHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val timerHandler = Handler(Looper.getMainLooper())
     private val timerRunnable = object : Runnable {
         override fun run() {
             secondsLeft--
@@ -38,7 +39,6 @@ class VaultPanel(context: Context) : LinearLayout(context) {
             }
         }
     }
-    var onAutoClose: (() -> Unit)? = null
 
     init {
         orientation = VERTICAL
@@ -122,7 +122,6 @@ class VaultPanel(context: Context) : LinearLayout(context) {
             text     = item.name
             textSize = 12f
             setTextColor(TEXT)
-            android.graphics.Typeface.create("serif", android.graphics.Typeface.BOLD).also { typeface = it }
         }
 
         val row = LinearLayout(context).apply {

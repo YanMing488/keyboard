@@ -19,9 +19,6 @@ android {
         release {
             isMinifyEnabled = false
         }
-        debug {
-            applicationIdSuffix = ".debug"
-        }
     }
 
     compileOptions {
@@ -33,7 +30,7 @@ android {
     }
 }
 
-// No external dependencies — pure Android SDK only
 dependencies {
-implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
 }

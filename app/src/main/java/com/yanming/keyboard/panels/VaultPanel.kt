@@ -1,4 +1,4 @@
-package com.yanming.keyboard.panels
+private lateinit var timerTxt: TextView
 
 import android.content.Context
 import android.graphics.Color
